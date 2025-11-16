@@ -20,11 +20,15 @@ set -e  # Exit on error
 : ${WRP_CORE_ENABLE_TESTS:=}
 : ${WRP_CORE_ENABLE_BENCHMARKS:=}
 
-# Export variables so they're available to subprocesses
-export WRP_CORE_ENABLE_MPI
-export WRP_CORE_ENABLE_TESTS
-export WRP_CORE_ENABLE_BENCHMARKS
+# Export INSTALL_PREFIX
 export INSTALL_PREFIX
+
+# Export all environment variables with specific prefixes
+for var in $(compgen -e); do
+    if [[ "$var" =~ ^(WRP_CORE_ENABLE_|WRP_CTE_ENABLE_|WRP_CAE_ENABLE_|WRP_CEE_ENABLE_|HSHM_ENABLE_|WRP_CTP_ENABLE_|WRP_RUNTIME_ENABLE_|CHIMAERA_ENABLE_) ]]; then
+        export "$var"
+    fi
+done
 
 # Create temporary working directory
 WORK_DIR=$(mktemp -d)

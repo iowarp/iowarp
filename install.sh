@@ -27,6 +27,7 @@ export INSTALL_PREFIX
 for var in $(compgen -e); do
     if [[ "$var" =~ ^(WRP_CORE_ENABLE_|WRP_CTE_ENABLE_|WRP_CAE_ENABLE_|WRP_CEE_ENABLE_|HSHM_ENABLE_|WRP_CTP_ENABLE_|WRP_RUNTIME_ENABLE_|CHIMAERA_ENABLE_) ]]; then
         export "$var"
+        echo "Forwarding $var"
     fi
 done
 

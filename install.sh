@@ -6,12 +6,25 @@
 #   curl -fsSL https://raw.githubusercontent.com/iowarp/iowarp-install/main/install.sh | bash
 # Or with custom install prefix:
 #   curl -fsSL https://raw.githubusercontent.com/iowarp/iowarp-install/main/install.sh | INSTALL_PREFIX=$HOME/iowarp bash
+# Or with build configuration options:
+#   curl -fsSL https://raw.githubusercontent.com/iowarp/iowarp-install/main/install.sh | WITH_MPI=1 BUILD_TESTS=1 BUILD_BENCHMARKS=1 bash
 #
 
 set -e  # Exit on error
 
 # Default install prefix
 : ${INSTALL_PREFIX:=/usr/local}
+
+# Build configuration variables (can be set via environment or command line)
+: ${WITH_MPI:=}
+: ${BUILD_TESTS:=}
+: ${BUILD_BENCHMARKS:=}
+
+# Export variables so they're available to subprocesses
+export WITH_MPI
+export BUILD_TESTS
+export BUILD_BENCHMARKS
+export INSTALL_PREFIX
 
 # Create temporary working directory
 WORK_DIR=$(mktemp -d)

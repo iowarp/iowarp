@@ -38,9 +38,21 @@ This repository provides unified installation methods and tools for the entire I
 One way to install IOWarp is using our standalone installer script:
 
 ```bash
-# Install (uses pip and expects a venv to be active)
+# Basic install (uses pip and expects a venv to be active)
 curl -fsSL https://raw.githubusercontent.com/iowarp/iowarp-install/main/install.sh | bash
+
+# Custom install location
+curl -fsSL https://raw.githubusercontent.com/iowarp/iowarp-install/main/install.sh | INSTALL_PREFIX=$HOME/iowarp bash
+
+# Install with build options
+curl -fsSL https://raw.githubusercontent.com/iowarp/iowarp-install/main/install.sh | WITH_MPI=1 BUILD_TESTS=1 BUILD_BENCHMARKS=1 bash
 ```
+
+**Environment Variables:**
+- `INSTALL_PREFIX` - Installation directory (default: `/usr/local`)
+- `WITH_MPI` - Enable MPI support (default: unset)
+- `BUILD_TESTS` - Build test suite (default: unset)
+- `BUILD_BENCHMARKS` - Build benchmarks (default: unset)
 
 This will:
 - Clone and build IOWarp core with all submodules

@@ -37,6 +37,7 @@ services:
     # Expose ZeroMQ port for client connections
     ports:
       - "5555:5555"
+      - "5556:5556"
 
     # Resource limits
     # Large shared memory for CTE operations
@@ -100,7 +101,6 @@ services:
 
     # Clean up container after run
     restart: "no"
-
   # Alternative service configurations for different test scenarios
   # Uncomment to use specific test cases
 
@@ -219,31 +219,31 @@ services:
   #   mem_limit: 8g
   #   restart: "no"
 
-# Example usage commands:
-#
-# Start runtime and run default benchmark (Put, 1 process, depth 4, 1MB I/O, 100 ops):
-#   docker-compose up
-#
-# Start runtime in background, then run benchmark:
-#   docker-compose up -d iowarp-runtime
-#   docker-compose up wrp-cte-bench
-#
-# Run Get benchmark with custom parameters:
-#   TEST_CASE=Get NUM_PROCS=4 DEPTH=8 IO_SIZE=4k IO_COUNT=100000 docker-compose up wrp-cte-bench
-#
-# Run PutGet benchmark with high concurrency:
-#   TEST_CASE=PutGet NUM_PROCS=8 DEPTH=16 docker-compose up wrp-cte-bench
-#
-# Run specific service variants:
-#   docker-compose up wrp-cte-bench-put
-#   docker-compose up wrp-cte-bench-large
-#
-# View logs:
-#   docker-compose logs -f iowarp-runtime
-#   docker-compose logs -f wrp-cte-bench
-#
-# Stop all services:
-#   docker-compose down
-#
-# Clean up and remove volumes:
-#   docker-compose down -v
+  # Example usage commands:
+  #
+  # Start runtime and run default benchmark (Put, 1 process, depth 4, 1MB I/O, 100 ops):
+  #   docker-compose up
+  #
+  # Start runtime in background, then run benchmark:
+  #   docker-compose up -d iowarp-runtime
+  #   docker-compose up wrp-cte-bench
+  #
+  # Run Get benchmark with custom parameters:
+  #   TEST_CASE=Get NUM_PROCS=4 DEPTH=8 IO_SIZE=4k IO_COUNT=100000 docker-compose up wrp-cte-bench
+  #
+  # Run PutGet benchmark with high concurrency:
+  #   TEST_CASE=PutGet NUM_PROCS=8 DEPTH=16 docker-compose up wrp-cte-bench
+  #
+  # Run specific service variants:
+  #   docker-compose up wrp-cte-bench-put
+  #   docker-compose up wrp-cte-bench-large
+  #
+  # View logs:
+  #   docker-compose logs -f iowarp-runtime
+  #   docker-compose logs -f wrp-cte-bench
+  #
+  # Stop all services:
+  #   docker-compose down
+  #
+  # Clean up and remove volumes:
+  #   docker-compose down -v

@@ -36,8 +36,8 @@ services:
 
     # Expose ZeroMQ port for client connections
     ports:
-      - "9182:9182"
-      - "9183:9183"
+      - "5555:5555"
+      - "5556:5556"
 
     # Resource limits
     # Large shared memory for CTE operations

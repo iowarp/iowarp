@@ -31,6 +31,7 @@ services:
 
         # Make IPC namespace accessible to host so external applications can connect
         ipc: host
+        network_mode: host
 
         # Keep container running as a daemon
         stdin_open: true

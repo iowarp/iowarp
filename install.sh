@@ -82,7 +82,7 @@ cd core
 if [ -f "install.sh" ]; then
     # chmod +x install.sh
     # INSTALL_PREFIX="$INSTALL_PREFIX" ./install.sh
-    pip install .
+    pip install -v .
 else
     echo "Error: install.sh not found in iowarp-core"
     exit 1

@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "iowarp"
 dynamic = ["version"]
-description = "A wrapper package that installs both iowarp-agent-toolkit and iowarp-core"
+description = "Unified interface for IOWarp: high-performance I/O runtime and AI agent toolkit"
 readme = "README.md"
 requires-python = ">=3.10"
 license = "BSD-3-Clause"
@@ -24,11 +24,15 @@ classifiers = [
 dependencies = [
     "iowarp-agent-toolkit",
     "iowarp-core",
+    "click>=8.1.0",
 ]
 
 [project.urls]
 "Homepage" = "https://github.com/iowarp/iowarp"
 "Bug Tracker" = "https://github.com/iowarp/iowarp/issues"
+
+[project.scripts]
+iowarp = "iowarp.cli:main"
 
 [tool.setuptools]
 packages = ["iowarp"]

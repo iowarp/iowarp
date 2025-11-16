@@ -33,6 +33,57 @@ This repository provides unified installation methods and tools for the entire I
 
 ## Installation
 
+### 📦 PyPI (Recommended for Python Users)
+
+Install IOWarp and all its components via pip or uv:
+
+```bash
+# Using pip
+pip install iowarp
+
+# Using uv (faster)
+uv pip install iowarp
+
+# As a CLI tool with uvx (no installation needed)
+uvx iowarp
+
+# Install as a persistent tool
+uv tool install iowarp
+```
+
+This installs:
+- **iowarp-core**: High-performance I/O runtime and data processing engine
+- **iowarp-agent-toolkit**: AI agent tools and 15+ MCP servers for scientific computing
+- **Unified CLI**: Single `iowarp` command to access all functionality
+
+**Quick Start:**
+
+```bash
+# Start IOWarp runtime (default behavior)
+iowarp
+
+# Or explicitly
+iowarp core start
+
+# Stop runtime
+iowarp core stop
+
+# List available MCP servers
+iowarp agent mcp-servers
+
+# Run an MCP server
+iowarp agent mcp-server hdf5
+
+# List prompt templates
+iowarp agent prompts
+```
+
+**Note:** iowarp-core is currently under active development. Some features may not be fully functional yet.
+
+**All individual commands remain available:**
+- `iowarp-core`, `wrp_start`, `wrp_stop`, etc. (core runtime commands)
+- `iowarp-agent-toolkit` (agent toolkit launcher)
+
 ### ⚡ Native Install
 
 One way to install IOWarp is using our standalone installer script:

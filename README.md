@@ -45,14 +45,14 @@ curl -fsSL https://raw.githubusercontent.com/iowarp/iowarp-install/main/install.
 curl -fsSL https://raw.githubusercontent.com/iowarp/iowarp-install/main/install.sh | INSTALL_PREFIX=$HOME/iowarp bash
 
 # Install with build options
-curl -fsSL https://raw.githubusercontent.com/iowarp/iowarp-install/main/install.sh | WITH_MPI=1 BUILD_TESTS=1 BUILD_BENCHMARKS=1 bash
+curl -fsSL https://raw.githubusercontent.com/iowarp/iowarp-install/main/install.sh | WRP_CORE_ENABLE_MPI=ON WRP_CORE_ENABLE_TESTS=ON WRP_CORE_ENABLE_BENCHMARKS=ON bash
 ```
 
 **Environment Variables:**
 - `INSTALL_PREFIX` - Installation directory (default: `/usr/local`)
-- `WITH_MPI` - Enable MPI support (default: unset)
-- `BUILD_TESTS` - Build test suite (default: unset)
-- `BUILD_BENCHMARKS` - Build benchmarks (default: unset)
+- `WRP_CORE_ENABLE_MPI` - Enable MPI support (default: unset, set to `ON` to enable)
+- `WRP_CORE_ENABLE_TESTS` - Build test suite (default: unset, set to `ON` to enable)
+- `WRP_CORE_ENABLE_BENCHMARKS` - Build benchmarks (default: unset, set to `ON` to enable)
 
 This will:
 - Clone and build IOWarp core with all submodules

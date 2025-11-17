@@ -11,9 +11,11 @@ The fallback logic is triggered on first import if iowarp_core is not available.
 """
 
 import sys
+import os
 import platform
 import subprocess
 import json
+import time
 from pathlib import Path
 from typing import Optional, Tuple
 from urllib.request import urlopen, Request
@@ -26,8 +28,24 @@ GITHUB_REPO = "core"
 GITHUB_RELEASES_API = f"https://api.github.com/repos/{GITHUB_OWNER}/{GITHUB_REPO}/releases"
 
 # Cache file to avoid repeated installation attempts
-CACHE_DIR = Path.home() / ".cache" / "iowarp"
-INSTALL_CACHE_FILE = CACHE_DIR / "core_install_attempted"
+# Use per-environment cache for virtual environments
+def _get_cache_dir() -> Path:
+    """
+    Get cache directory for installation state.
+
+    For virtual environments, uses the venv directory to allow
+    independent retry attempts per environment.
+    For system Python, uses user cache directory.
+    """
+    # Check if running in a virtual environment
+    if hasattr(sys, 'prefix') and sys.prefix != sys.base_prefix:
+        # Virtual environment - use venv-specific cache
+        return Path(sys.prefix) / ".iowarp_cache"
+    # System Python - use user cache directory
+    return Path.home() / ".cache" / "iowarp"
+
+CACHE_DIR = _get_cache_dir()
+INSTALL_CACHE_FILE = CACHE_DIR / "core_install_state.json"
 
 
 def get_platform_info() -> Tuple[str, str, str]:
@@ -219,15 +237,103 @@ def try_github_fallback() -> bool:
     return install_from_github_wheel(wheel_url)
 
 
-def mark_install_attempted():
-    """Mark that we've attempted installation to avoid repeated failures."""
+def mark_install_result(success: bool, error_msg: str = ""):
+    """
+    Mark installation result with smart retry logic.
+
+    Args:
+        success: Whether installation succeeded
+        error_msg: Error message if failed (optional)
+    """
     CACHE_DIR.mkdir(parents=True, exist_ok=True)
-    INSTALL_CACHE_FILE.write_text("attempted")
+
+    if success:
+        # Successful installation - cache permanently
+        result = {
+            "success": True,
+            "timestamp": time.time(),
+            "python_version": f"{sys.version_info.major}.{sys.version_info.minor}",
+            "platform": platform.platform()
+        }
+    else:
+        # Failed installation - track attempts for exponential backoff
+        data = {}
+        if INSTALL_CACHE_FILE.exists():
+            try:
+                data = json.loads(INSTALL_CACHE_FILE.read_text())
+            except:
+                pass
+
+        result = {
+            "success": False,
+            "attempts": data.get("attempts", 0) + 1,
+            "last_attempt": time.time(),
+            "error": error_msg,
+            "python_version": f"{sys.version_info.major}.{sys.version_info.minor}",
+            "platform": platform.platform()
+        }
+
+    INSTALL_CACHE_FILE.write_text(json.dumps(result, indent=2))
 
 
-def has_install_been_attempted() -> bool:
-    """Check if we've already attempted installation in this environment."""
-    return INSTALL_CACHE_FILE.exists()
+def should_retry_install() -> bool:
+    """
+    Check if installation should be retried.
+
+    Uses exponential backoff for failed attempts:
+    - 1st failure: retry after 1 minute
+    - 2nd failure: retry after 5 minutes
+    - 3rd failure: retry after 1 hour
+    - 4th+ failures: retry after 24 hours
+
+    Returns:
+        True if installation should be attempted, False otherwise
+    """
+    # Allow force retry via environment variable
+    if os.environ.get("IOWARP_FORCE_INSTALL", "").lower() in ("true", "1", "yes"):
+        print("  Forcing installation attempt (IOWARP_FORCE_INSTALL set)", file=sys.stderr)
+        return True
+
+    if not INSTALL_CACHE_FILE.exists():
+        return True
+
+    try:
+        data = json.loads(INSTALL_CACHE_FILE.read_text())
+
+        # If installation succeeded, don't retry
+        if data.get("success"):
+            return False
+
+        # Exponential backoff intervals (in seconds)
+        # 1min, 5min, 1hour, 24hours
+        backoff_intervals = [60, 300, 3600, 86400]
+        attempts = data.get("attempts", 0)
+        last_attempt = data.get("last_attempt", 0)
+
+        # Calculate required wait time based on number of attempts
+        required_wait = backoff_intervals[min(attempts - 1, len(backoff_intervals) - 1)]
+        elapsed = time.time() - last_attempt
+
+        if elapsed < required_wait:
+            wait_remaining = int(required_wait - elapsed)
+            if wait_remaining < 120:
+                wait_str = f"{wait_remaining} seconds"
+            elif wait_remaining < 7200:
+                wait_str = f"{wait_remaining // 60} minutes"
+            else:
+                wait_str = f"{wait_remaining // 3600} hours"
+
+            print(f"  Retry blocked by exponential backoff (attempt {attempts})", file=sys.stderr)
+            print(f"  Wait {wait_str} before retry, or set IOWARP_FORCE_INSTALL=true", file=sys.stderr)
+            print(f"  Cache location: {INSTALL_CACHE_FILE}", file=sys.stderr)
+            return False
+
+        return True
+
+    except Exception as e:
+        # Corrupted cache - allow retry
+        print(f"  Warning: Cache file corrupted ({e}), allowing retry", file=sys.stderr)
+        return True
 
 
 def install_iowarp_core_with_fallback() -> bool:
@@ -240,17 +346,19 @@ def install_iowarp_core_with_fallback() -> bool:
     Returns:
         True if installation succeeded, False otherwise
     """
-    # Check if we've already tried
-    if has_install_been_attempted():
+    # Check if we should retry installation
+    if not should_retry_install():
         return False
-
-    # Mark that we're attempting installation
-    mark_install_attempted()
 
     # Try GitHub fallback
     success = try_github_fallback()
 
-    if not success:
+    # Mark result for future retry logic
+    if success:
+        mark_install_result(success=True)
+    else:
+        mark_install_result(success=False, error_msg="GitHub fallback installation failed")
+
         print("\nFailed to install iowarp-core automatically.", file=sys.stderr)
         print("\nManual installation options:", file=sys.stderr)
         print("1. Install from GitHub release (recommended):", file=sys.stderr)
@@ -265,3 +373,28 @@ def install_iowarp_core_with_fallback() -> bool:
         print(f"   https://github.com/{GITHUB_OWNER}/{GITHUB_REPO}#installation", file=sys.stderr)
 
     return success
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

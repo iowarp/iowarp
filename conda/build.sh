@@ -25,7 +25,7 @@ cd build
 
 # Configure with CMake
 cmake .. \
-    --preset minimal \
+    --preset minimalist \
     -DCMAKE_BUILD_TYPE=Release \
     -DCMAKE_INSTALL_PREFIX=$PREFIX \
     "${CMAKE_EXTRA_ARGS[@]}"
@@ -33,3 +33,9 @@ cmake .. \
 # Build and install
 make -j${CPU_COUNT} VERBOSE=1
 make install
+
+# Move binaries from site-packages/bin to the standard bin directory
+if [ -d "$PREFIX/lib/python3.12/site-packages/bin" ]; then
+    mkdir -p "$PREFIX/bin"
+    cp -r "$PREFIX/lib/python3.12/site-packages/bin/"* "$PREFIX/bin/"
+fi

@@ -1,11 +1,11 @@
 name: Build and Publish Conda Package
 
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - 'conda/**'
+  # push:
+  #   branches:
+  #     - main
+  #   paths:
+  #     - 'conda/**'
   workflow_dispatch:
 
 jobs:

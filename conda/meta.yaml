@@ -26,11 +26,12 @@ requirements:
     - zeromq
     - boost
     - cereal
+    - yaml-cpp
   run:
     - hdf5
     - zeromq
     - boost
-    - cereal
+    - yaml-cpp
 
 about:
   home: https://www.iowarp.ai

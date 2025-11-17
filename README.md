@@ -33,6 +33,87 @@ This repository provides unified installation methods and tools for the entire I
 
 ## Installation
 
+### 📦 PyPI (Recommended for Python Users)
+
+Install IOWarp and all its components via pip or uv:
+
+```bash
+# Using pip
+pip install iowarp
+
+# Using uv (faster)
+uv pip install iowarp
+
+# As a CLI tool with uvx (no installation needed)
+uvx iowarp
+
+# Install as a persistent tool
+uv tool install iowarp
+```
+
+This installs:
+- **iowarp-core**: High-performance I/O runtime and data processing engine (automatic fallback to GitHub releases)
+- **iowarp-agent-toolkit**: AI agent tools and 15+ MCP servers for scientific computing
+- **Unified CLI**: Single `iowarp` command to access all functionality
+
+**Automatic Installation Fallback:**
+
+The `iowarp` package includes intelligent automatic installation for `iowarp-core`:
+
+1. **First attempt**: Checks if iowarp-core is already installed (e.g., from PyPI wheels when available)
+2. **Automatic fallback**: If not found, automatically downloads and installs compatible wheels from GitHub releases
+3. **Seamless experience**: Works transparently on first `import iowarp` - no manual intervention needed
+
+This ensures:
+- ✅ Installation always succeeds with `pip install iowarp`
+- ✅ Works on all platforms (Linux x86_64, ARM64) even when PyPI wheels are unavailable
+- ✅ Automatic updates when PyPI wheels become available (future)
+- ✅ No build tools required for most users
+
+**Platform Compatibility:**
+- Linux x86_64 (manylinux_2_17)
+- Linux ARM64/aarch64 (manylinux_2_17)
+- Python 3.10, 3.11, 3.12, 3.13
+
+**If automatic installation fails**, you can manually install iowarp-core from GitHub releases:
+```bash
+# Find your Python version
+python --version  # e.g., Python 3.10.x
+
+# Install matching wheel from GitHub releases
+# Replace cp310 with your Python version (cp310, cp311, cp312, cp313)
+# Replace x86_64 with aarch64 for ARM systems
+pip install https://github.com/iowarp/core/releases/download/v0.6.2/iowarp_core-0.6.2-cp310-cp310-manylinux_2_17_x86_64.whl
+```
+
+**Quick Start:**
+
+```bash
+# Start IOWarp runtime (default behavior)
+iowarp
+
+# Or explicitly
+iowarp core start
+
+# Stop runtime
+iowarp core stop
+
+# List available MCP servers
+iowarp agent mcp-servers
+
+# Run an MCP server
+iowarp agent mcp-server hdf5
+
+# List prompt templates
+iowarp agent prompts
+```
+
+**Note:** iowarp-core is currently under active development. Some features may not be fully functional yet.
+
+**All individual commands remain available:**
+- `iowarp-core`, `wrp_start`, `wrp_stop`, etc. (core runtime commands)
+- `iowarp-agent-toolkit` (agent toolkit launcher)
+
 ### ⚡ Native Install
 
 One way to install IOWarp is using our standalone installer script:

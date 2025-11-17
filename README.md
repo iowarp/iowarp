@@ -52,9 +52,39 @@ uv tool install iowarp
 ```
 
 This installs:
-- **iowarp-core**: High-performance I/O runtime and data processing engine
+- **iowarp-core**: High-performance I/O runtime and data processing engine (automatic fallback to GitHub releases)
 - **iowarp-agent-toolkit**: AI agent tools and 15+ MCP servers for scientific computing
 - **Unified CLI**: Single `iowarp` command to access all functionality
+
+**Automatic Installation Fallback:**
+
+The `iowarp` package includes intelligent automatic installation for `iowarp-core`:
+
+1. **First attempt**: Checks if iowarp-core is already installed (e.g., from PyPI wheels when available)
+2. **Automatic fallback**: If not found, automatically downloads and installs compatible wheels from GitHub releases
+3. **Seamless experience**: Works transparently on first `import iowarp` - no manual intervention needed
+
+This ensures:
+- ✅ Installation always succeeds with `pip install iowarp`
+- ✅ Works on all platforms (Linux x86_64, ARM64) even when PyPI wheels are unavailable
+- ✅ Automatic updates when PyPI wheels become available (future)
+- ✅ No build tools required for most users
+
+**Platform Compatibility:**
+- Linux x86_64 (manylinux_2_17)
+- Linux ARM64/aarch64 (manylinux_2_17)
+- Python 3.10, 3.11, 3.12, 3.13
+
+**If automatic installation fails**, you can manually install iowarp-core from GitHub releases:
+```bash
+# Find your Python version
+python --version  # e.g., Python 3.10.x
+
+# Install matching wheel from GitHub releases
+# Replace cp310 with your Python version (cp310, cp311, cp312, cp313)
+# Replace x86_64 with aarch64 for ARM systems
+pip install https://github.com/iowarp/core/releases/download/v0.6.2/iowarp_core-0.6.2-cp310-cp310-manylinux_2_17_x86_64.whl
+```
 
 **Quick Start:**
 

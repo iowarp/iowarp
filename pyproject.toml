@@ -23,9 +23,12 @@ classifiers = [
 ]
 dependencies = [
     "iowarp-agent-toolkit",
-    "iowarp-core",
     "click>=8.1.0",
 ]
+
+# Note: iowarp-core is NOT listed as a pip dependency to enable automatic fallback installation.
+# The __init__.py module will attempt to install iowarp-core from GitHub releases if not found,
+# providing a seamless user experience even when PyPI wheels are unavailable.
 
 [project.urls]
 "Homepage" = "https://github.com/iowarp/iowarp"

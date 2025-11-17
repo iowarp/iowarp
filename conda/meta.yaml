@@ -25,10 +25,12 @@ requirements:
     - hdf5
     - zeromq
     - boost
+    - cereal
   run:
     - hdf5
     - zeromq
     - boost
+    - cereal
 
 about:
   home: https://www.iowarp.ai

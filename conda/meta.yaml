@@ -1,0 +1,48 @@
+{% set name = "iowarp-core" %}
+{% set version = "0.1.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  git_url: https://github.com/iowarp/core.git
+  git_rev: main
+  git_depth: -1  # Full clone to get submodules
+
+build:
+  number: 0
+  skip: true  # [win]
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - cmake >=3.15
+    - make
+    - git
+  host:
+    - hdf5
+    - zeromq
+    - boost
+  run:
+    - hdf5
+    - zeromq
+    - boost
+
+about:
+  home: https://www.iowarp.ai
+  license: BSD-3-Clause
+  license_file: LICENSE
+  summary: 'IOWarp Context Management Platform'
+  description: |
+    IOWarp is a context management platform designed to accelerate scientific
+    workflows by solving data bottlenecks using AI. It enables AI agents to
+    orchestrate large-scale data, complex multi-step workflows, and autonomous
+    agentic orchestration in high-performance computing environments.
+  dev_url: https://github.com/iowarp/core
+  doc_url: https://www.iowarp.ai/docs/intro
+
+extra:
+  recipe-maintainers:
+    - iowarp

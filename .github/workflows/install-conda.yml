@@ -1,0 +1,41 @@
+name: Build and Publish Conda Package
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'conda/**'
+  workflow_dispatch:
+
+jobs:
+  build-and-publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Miniconda
+        uses: conda-incubator/setup-miniconda@v3
+        with:
+          auto-update-conda: true
+          python-version: 3.9
+          channels: conda-forge,defaults
+          channel-priority: flexible
+
+      - name: Install conda-build and anaconda-client
+        shell: bash -l {0}
+        run: |
+          conda install -y conda-build anaconda-client
+
+      - name: Build conda package
+        shell: bash -l {0}
+        run: |
+          conda build conda/
+
+      - name: Upload to Anaconda.org
+        shell: bash -l {0}
+        env:
+          ANACONDA_TOKEN: ${{ secrets.ANACONDA_TOKEN }}
+        run: |
+          anaconda -t $ANACONDA_TOKEN upload --user iowarp --force $(conda build conda/ --output)

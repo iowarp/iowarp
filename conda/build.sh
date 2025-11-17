@@ -25,10 +25,11 @@ cd build
 
 # Configure with CMake
 cmake .. \
+    --preset minimal \
     -DCMAKE_BUILD_TYPE=Release \
     -DCMAKE_INSTALL_PREFIX=$PREFIX \
     "${CMAKE_EXTRA_ARGS[@]}"
 
 # Build and install
-make -j${CPU_COUNT}
+make -j${CPU_COUNT} VERBOSE=1
 make install

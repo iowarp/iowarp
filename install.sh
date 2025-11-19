@@ -8,12 +8,17 @@
 #   curl -fsSL https://raw.githubusercontent.com/iowarp/iowarp-install/main/install.sh | INSTALL_PREFIX=$HOME/iowarp bash
 # Or with build configuration options:
 #   curl -fsSL https://raw.githubusercontent.com/iowarp/iowarp-install/main/install.sh | WRP_CORE_ENABLE_MPI=ON WRP_CORE_ENABLE_TESTS=ON WRP_CORE_ENABLE_BENCHMARKS=ON bash
+# Or with a specific branch:
+#   curl -fsSL https://raw.githubusercontent.com/iowarp/iowarp-install/main/install.sh | WRP_BRANCH=develop bash
 #
 
 set -e  # Exit on error
 
 # Default install prefix
 : ${INSTALL_PREFIX:=/usr/local}
+
+# Branch to install from
+: ${WRP_BRANCH:=main}
 
 # Build configuration variables (can be set via environment or command line)
 : ${WRP_CORE_ENABLE_MPI:=}
@@ -65,8 +70,8 @@ fi
 
 # Clone iowarp-core repository with submodules
 if [ ! -d "core" ]; then
-    echo "Cloning iowarp-core with submodules..."
-    git clone --recurse-submodules https://github.com/iowarp/core.git
+    echo "Cloning iowarp-core (branch: $WRP_BRANCH) with submodules..."
+    git clone --recurse-submodules -b "$WRP_BRANCH" https://github.com/iowarp/core.git
 else
     echo "iowarp-core already exists, skipping clone..."
 fi

@@ -34,7 +34,7 @@ class Iowarp(CMakePackage):
     variant('posix', default=True, description='Enable POSIX adapter')
     variant('mpiio', default=True, description='Enable MPI I/O adapter')
     variant('stdio', default=True, description='Enable STDIO adapter')
-    variant('vfd', default=False, description='Enable HDF5 VFD')
+    variant('hdf5', default=True, description='Enable HDF5')
     variant('ares', default=False, description='Enable full libfabric install')
     variant('mochi', default=False, description='Build with mochi-thallium support')
     variant('encrypt', default=False, description='Include encryption libraries')
@@ -63,7 +63,7 @@ class Iowarp(CMakePackage):
     # Conditional core dependencies
     depends_on('libelf', when='+elf')
     depends_on('mpi', when='+mpiio')
-    depends_on('hdf5', when='+vfd')
+    depends_on('hdf5', when='+hdf5')
     depends_on('adios2', when='+adios2')
 
     # Networking libraries
@@ -108,7 +108,7 @@ class Iowarp(CMakePackage):
         args.append(self.define_from_variant('WRP_CORE_ENABLE_CEE', 'cee'))
 
         # Context-transport-primitives (HSHM) options
-        if '+vfd' in self.spec:
+        if '+hdf5' in self.spec:
             args.append(self.define('HSHM_ENABLE_VFD', 'ON'))
         if '+compress' in self.spec:
             args.append(self.define('HSHM_ENABLE_COMPRESS', 'ON'))
@@ -175,7 +175,7 @@ class Iowarp(CMakePackage):
                     args.append(self.define('CTE_MPICH', 'ON'))
             if '+stdio' in self.spec:
                 args.append(self.define('CTE_ENABLE_STDIO_ADAPTER', 'ON'))
-            if '+vfd' in self.spec:
+            if '+hdf5' in self.spec:
                 args.append(self.define('CTE_ENABLE_VFD', 'ON'))
             if '+compress' in self.spec:
                 args.append(self.define('CTE_ENABLE_COMPRESS', 'ON'))
@@ -200,7 +200,7 @@ class Iowarp(CMakePackage):
                     args.append(self.define('CAE_MPICH', 'ON'))
             if '+stdio' in self.spec:
                 args.append(self.define('CAE_ENABLE_STDIO_ADAPTER', 'ON'))
-            if '+vfd' in self.spec:
+            if '+hdf5' in self.spec:
                 args.append(self.define('CAE_ENABLE_VFD', 'ON'))
             if '+cuda' in self.spec:
                 args.append(self.define('CAE_ENABLE_CUDA', 'ON'))

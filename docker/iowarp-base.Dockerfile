@@ -61,39 +61,12 @@ RUN wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -
     && bash /tmp/miniconda.sh -b -p /home/iowarp/miniconda3 \
     && rm /tmp/miniconda.sh
 
-# Initialize conda for bash
+# Initialize conda for bash and accept Terms of Service
 RUN /home/iowarp/miniconda3/bin/conda init bash \
     && /home/iowarp/miniconda3/bin/conda config --add channels conda-forge \
-    && /home/iowarp/miniconda3/bin/conda config --set channel_priority strict
-
-# Accept Anaconda Terms of Service and install all development dependencies via conda
-# This avoids library conflicts between system packages and conda packages
-# Dependencies installed:
-#   - Build tools: cmake, ninja, conda-build
-#   - Core libraries: boost, hdf5, yaml-cpp, zeromq, cppzmq, cereal
-#   - Testing: catch2
-#   - Network: libcurl, openssl
-#   - Compression: zlib
-#   - Optional: poco (for Globus support), nlohmann_json
-RUN /home/iowarp/miniconda3/bin/conda tos accept --override-channels --channel https://repo.anaconda.com/pkgs/main \
-    && /home/iowarp/miniconda3/bin/conda tos accept --override-channels --channel https://repo.anaconda.com/pkgs/r \
-    && /home/iowarp/miniconda3/bin/conda install -y \
-    conda-build \
-    cmake \
-    ninja \
-    boost \
-    hdf5 \
-    yaml-cpp \
-    zeromq \
-    cppzmq \
-    cereal \
-    catch2 \
-    libcurl \
-    openssl \
-    zlib \
-    poco \
-    nlohmann_json \
-    && /home/iowarp/miniconda3/bin/conda clean -ya
+    && /home/iowarp/miniconda3/bin/conda config --set channel_priority strict \
+    && /home/iowarp/miniconda3/bin/conda tos accept --override-channels --channel https://repo.anaconda.com/pkgs/main \
+    && /home/iowarp/miniconda3/bin/conda tos accept --override-channels --channel https://repo.anaconda.com/pkgs/r
 
 #------------------------------------------------------------
 # Python Virtual Environment
@@ -168,21 +141,12 @@ USER iowarp
 # Conda base environment is auto-activated to ensure all conda dependencies are available
 RUN echo '' >> /home/iowarp/.bashrc \
     && echo '# >>> conda initialize >>>' >> /home/iowarp/.bashrc \
-    && echo '# Conda base environment is auto-activated with all dev dependencies' >> /home/iowarp/.bashrc \
-    && echo '# This includes: boost, hdf5, yaml-cpp, zeromq, cereal, catch2, etc.' >> /home/iowarp/.bashrc \
-    && echo '# Create custom environments if needed: conda create -n myenv' >> /home/iowarp/.bashrc \
+    && echo '# Conda base environment is auto-activated' >> /home/iowarp/.bashrc \
     && echo 'eval "$(/home/iowarp/miniconda3/bin/conda shell.bash hook)"' >> /home/iowarp/.bashrc \
     && echo '# <<< conda initialize <<<' >> /home/iowarp/.bashrc \
     && echo '' >> /home/iowarp/.bashrc \
     && echo '# Spack environment' >> /home/iowarp/.bashrc \
-    && echo 'source ${SPACK_DIR}/share/spack/setup-env.sh' >> /home/iowarp/.bashrc \
-    && echo '' >> /home/iowarp/.bashrc \
-    && echo '# Python virtual environment (alternative to conda)' >> /home/iowarp/.bashrc \
-    && echo '# Note: venv is NOT recommended when using conda dependencies' >> /home/iowarp/.bashrc \
-    && echo '# Uncomment to auto-activate venv instead of conda (use at your own risk):' >> /home/iowarp/.bashrc \
-    && echo '# if [ -f /home/iowarp/venv/bin/activate ]; then' >> /home/iowarp/.bashrc \
-    && echo '#     source /home/iowarp/venv/bin/activate' >> /home/iowarp/.bashrc \
-    && echo '# fi' >> /home/iowarp/.bashrc
+    && echo 'source ${SPACK_DIR}/share/spack/setup-env.sh' >> /home/iowarp/.bashrc
 
 WORKDIR /workspace
 

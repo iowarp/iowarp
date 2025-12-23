@@ -16,7 +16,7 @@ class Iowarp(CMakePackage):
 
     # Branch versions
     version('main', branch='main', submodules=True, preferred=True)
-    version('dev', branch='dev', submodules=True)
+    version('dev', branch='82-add-ctest-to-actions-and-use-absolute-rpaths', submodules=True)
 
     # Build variants
     variant('debug', default=False, description='Build in Debug mode')

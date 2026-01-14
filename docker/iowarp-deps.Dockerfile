@@ -15,46 +15,68 @@ RUN cd ${HOME}/iowarp-install && \
 RUN cd ${HOME}/grc-repo && \
     git pull origin main
 
-# Install core build tools (needs root)
+#------------------------------------------------------------
+# Conda Dependencies
+#------------------------------------------------------------
+
+# Install all development dependencies via conda
+# This avoids library conflicts between system packages and conda packages
+# Dependencies installed:
+#   - Build tools: cmake, ninja, conda-build
+#   - Core libraries: boost, hdf5, yaml-cpp, zeromq, cppzmq, cereal
+#   - Testing: catch2
+#   - Network: libcurl, openssl
+#   - Compression: zlib
+#   - Optional: poco (for Globus support), nlohmann_json
+RUN /home/iowarp/miniconda3/bin/conda install -y \
+    conda-build \
+    cmake \
+    ninja \
+    boost \
+    hdf5 \
+    yaml-cpp \
+    zeromq \
+    cppzmq \
+    cereal \
+    catch2 \
+    libcurl \
+    openssl \
+    zlib \
+    poco \
+    nlohmann_json \
+    && /home/iowarp/miniconda3/bin/conda clean -ya
+
+# Set conda environment variables for CMake to find packages
+# These allow pkg-config and CMake to locate conda-installed libraries
+ENV CONDA_PREFIX=/home/iowarp/miniconda3
+ENV PKG_CONFIG_PATH=/home/iowarp/miniconda3/lib/pkgconfig:${PKG_CONFIG_PATH}
+ENV CMAKE_PREFIX_PATH=/home/iowarp/miniconda3:${CMAKE_PREFIX_PATH}
+
+#------------------------------------------------------------
+# System Dependencies (not available via conda)
+#------------------------------------------------------------
+
+# Install system packages not provided by conda
 USER root
 RUN apt-get update && apt-get install -y \
-    cmake \
-    g++ \
-    doxygen \
-    git \
-    && rm -rf /var/lib/apt/lists/*
-
-# Install core dependencies
-RUN apt-get update && apt-get install -y \
-    libboost-all-dev \
-    libzmq3-dev \
     libelf-dev \
-    libssl-dev \
     && rm -rf /var/lib/apt/lists/*
+# NOTE: The following apt packages are now provided by conda and commented out:
+#   cmake, g++, doxygen, git (build tools - cmake from conda, others in base)
+#   libboost-all-dev (conda boost)
+#   libzmq3-dev (conda zeromq)
+#   libssl-dev (conda openssl)
+#   libhdf5-dev hdf5-tools (conda hdf5)
+#   pkg-config (in base image)
+#   python3 python3-pip (in base image)
 
-# Install MPI (openmpi) and serial HDF5
+# Install MPI (openmpi) - not available via conda in our setup
 RUN apt-get update && apt-get install -y \
     openmpi-bin \
     libopenmpi-dev \
     mpi-default-dev \
-    libhdf5-dev \
-    hdf5-tools \
     && rm -rf /var/lib/apt/lists/*
 
-# Install pkg-config
-RUN apt-get update && apt-get install -y \
-    pkg-config \
-    && rm -rf /var/lib/apt/lists/*
-
-# Install Python
-RUN apt-get update && apt-get install -y \
-    python3 \
-    python3-pip \
-    && rm -rf /var/lib/apt/lists/*
-
-# Note: catch2, cereal, yaml-cpp, and nanobind are now submodules in core
-# Note: Skipping c-blosc2 - libblosc-dev from apt should be sufficient
-# If needed later, can build from source with: -DBUILD_EXAMPLES=OFF -DBUILD_FUZZERS=OFF
 ENV OMPI_ALLOW_RUN_AS_ROOT=1
 ENV OMPI_ALLOW_RUN_AS_ROOT_CONFIRM=1
 
@@ -62,18 +84,19 @@ ENV OMPI_ALLOW_RUN_AS_ROOT_CONFIRM=1
 USER iowarp
 WORKDIR /home/iowarp
 
-# Configure Spack to use system packages
+# Configure Spack to use conda packages
+# Note: conda packages are in /home/iowarp/miniconda3
 RUN mkdir -p ~/.spack && \
     echo "packages:" > ~/.spack/packages.yaml && \
     echo "  cmake:" >> ~/.spack/packages.yaml && \
     echo "    externals:" >> ~/.spack/packages.yaml && \
     echo "    - spec: cmake" >> ~/.spack/packages.yaml && \
-    echo "      prefix: /usr" >> ~/.spack/packages.yaml && \
+    echo "      prefix: /home/iowarp/miniconda3" >> ~/.spack/packages.yaml && \
     echo "    buildable: false" >> ~/.spack/packages.yaml && \
     echo "  boost:" >> ~/.spack/packages.yaml && \
     echo "    externals:" >> ~/.spack/packages.yaml && \
     echo "    - spec: boost" >> ~/.spack/packages.yaml && \
-    echo "      prefix: /usr" >> ~/.spack/packages.yaml && \
+    echo "      prefix: /home/iowarp/miniconda3" >> ~/.spack/packages.yaml && \
     echo "    buildable: false" >> ~/.spack/packages.yaml && \
     echo "  openmpi:" >> ~/.spack/packages.yaml && \
     echo "    externals:" >> ~/.spack/packages.yaml && \
@@ -83,7 +106,7 @@ RUN mkdir -p ~/.spack && \
     echo "  hdf5:" >> ~/.spack/packages.yaml && \
     echo "    externals:" >> ~/.spack/packages.yaml && \
     echo "    - spec: hdf5" >> ~/.spack/packages.yaml && \
-    echo "      prefix: /usr" >> ~/.spack/packages.yaml && \
+    echo "      prefix: /home/iowarp/miniconda3" >> ~/.spack/packages.yaml && \
     echo "    buildable: false" >> ~/.spack/packages.yaml && \
     echo "  python:" >> ~/.spack/packages.yaml && \
     echo "    externals:" >> ~/.spack/packages.yaml && \

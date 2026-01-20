@@ -124,6 +124,9 @@ class Iowarp(CMakePackage):
             args.append(self.define('HSHM_ENABLE_CUDA', 'ON'))
         if '+rocm' in self.spec:
             args.append(self.define('HSHM_ENABLE_ROCM', 'ON'))
+        if '+adios2' in self.spec:
+            args.append(self.define('WRP_CTE_ENABLE_ADIOS2_ADAPTER', 'ON'))
+            args.append(self.define('WRP_CORE_ENABLE_GRAY_SCOTT', 'ON'))
 
         # Tests and benchmarks
         if '+test' in self.spec:

@@ -44,7 +44,7 @@ class Iowarp(CMakePackage):
     variant('zmq', default=True, description='Build ZeroMQ support')
     variant('cuda', default=False, description='Enable CUDA support')
     variant('rocm', default=False, description='Enable ROCm support')
-    variant('adios2', default=True, description='Build with ADIOS2 support')
+    variant('adios2', default=False, description='Build with ADIOS2 support')
 
     # Core dependencies (always required)
     depends_on('cmake@3.25:')

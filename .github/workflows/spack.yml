@@ -19,7 +19,6 @@ jobs:
     - name: install iowarp
       run: |
         . ./spack/share/spack/setup-env.sh
-        spack external find
         spack repo add iowarp-spack
         spack install iowarp+posix
         spack load iowarp+posix

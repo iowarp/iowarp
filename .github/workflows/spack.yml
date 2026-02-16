@@ -2,20 +2,19 @@ name: spack
 
 on:
   workflow_dispatch:
-  # push:
-  #   branches: [ main ]
+  push:
+    branches: [ main ]
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
     - name: checkout
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
     - name: checkout spack
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
       with:
         repository: spack/spack
-        ref: v0.23.0
         path: ./spack
     - name: install iowarp
       run: |

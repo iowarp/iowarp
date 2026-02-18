@@ -16,7 +16,7 @@ class Iowarp(CMakePackage):
 
     # Branch versions
     version('main', branch='main', submodules=True, preferred=True)
-    version('dev', branch='82-add-ctest-to-actions-and-use-absolute-rpaths', submodules=True)
+    version('dev', branch='123-integrate-adios2-gray-scott-into-iowarp', submodules=True)
 
     # Build variants
     variant('debug', default=False, description='Build in Debug mode')
@@ -44,7 +44,7 @@ class Iowarp(CMakePackage):
     variant('zmq', default=True, description='Build ZeroMQ support')
     variant('cuda', default=False, description='Enable CUDA support')
     variant('rocm', default=False, description='Enable ROCm support')
-    variant('adios2', default=True, description='Build with ADIOS2 support')
+    variant('adios2', default=False, description='Build with ADIOS2 support')
 
     # Core dependencies (always required)
     depends_on('cmake@3.25:')
@@ -124,6 +124,9 @@ class Iowarp(CMakePackage):
             args.append(self.define('HSHM_ENABLE_CUDA', 'ON'))
         if '+rocm' in self.spec:
             args.append(self.define('HSHM_ENABLE_ROCM', 'ON'))
+        if '+adios2' in self.spec:
+            args.append(self.define('WRP_CTE_ENABLE_ADIOS2_ADAPTER', 'ON'))
+            args.append(self.define('WRP_CORE_ENABLE_GRAY_SCOTT', 'ON'))
 
         # Tests and benchmarks
         if '+test' in self.spec:
